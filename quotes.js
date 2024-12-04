@@ -1,6 +1,10 @@
+
+import { marked } from './libs/marked.esm.js'
+
 // Unsplash API settings
 const UNSPLASH_ACCESS_KEY = 'EDc0OHPxWQp34NIILueQ1UVs9LbWWLct5pFh5dsfmpI'
 const UNSPLASH_URL = `https://api.unsplash.com/photos/random?query=nature&orientation=landscape&client_id=${UNSPLASH_ACCESS_KEY}`;
+
 
 // Number of verses in each chapter of the Bhagavad Gita
 const versesPerChapter = {
@@ -124,10 +128,10 @@ function openYouTube(verseData) {
     window.open(youtubeLink, '_blank');
 }
 
-// Function to go to the learning site in a new tab
-function learnTheVerse() {
-    const learnLink = 'https://www.sgsgitafoundation.org/tutor.html';
-    window.open(learnLink, '_blank');
+
+
+function teachTheVerse() {
+    
 }
 
 // Function to handle footer icon clicks
@@ -136,7 +140,9 @@ function handleFooterClicks(verseData) {
     document.getElementById('translation').addEventListener('click', () => showTranslations(verseData));
     document.getElementById('commentary').addEventListener('click', () => showCommentary(verseData));
     document.getElementById('youtube').addEventListener('click', () => openYouTube(verseData));
-    document.getElementById('learn-verse').addEventListener('click', learnTheVerse);
+    document.getElementById('act-with-ai').addEventListener('click', () => actWithAI (verseData));
+  //  document.getElementById('teach-verse').addEventListener('click', teachTheVerse);
+
 }
 
 // Function to display the verse and its translation in the HTML
@@ -179,7 +185,90 @@ async function fetchRandomVerse() {
     }
 }
 
+async function setupAIModels() {
+    chrome.aiOriginTrial.languageModel.capabilities()
+    .then(capabilities => {
+        if (capabilities.available === 'readily') {
+            // Model is ready to use
+            console.log('Model is ready!');
+            // Proceed with creating a language model session
+        } else if (capabilities.available === 'after-download') {
+            // Model needs to be downloaded first
+            console.log('Model needs to be downloaded.');
+            // Create a language model session to trigger the download
+            chrome.aiOriginTrial.languageModel.create()
+                .then(session => {
+                    // Handle the session or display a progress indicator
+                    console.log('Model download initiated.');
+                    // Optionally, you can listen for download progress events
+                })
+                .catch(error => {
+                    console.error('Error creating session:', error);
+                });
+        } else {
+            console.log('Model is not available.');
+        }
+    });
+
+    const session = await chrome.aiOriginTrial.languageModel.create({
+        initialPrompts: [
+            { role: 'system', content: 'You are a friendly, helpful assistant specialized in Bhagavad Gita and creates an Action Plan of 3 actions based on the verse.' },
+            // Verse 1
+            { role: 'user', content: 'Provide a concise action plan based on Bhagavad Gita 6.16: "There is no possibility of becoming a yogi if one eats too much or eats too little, sleeps too much or does not sleep enough."' },
+            { role: 'assistant', content: '## Action Plan: Balancing Body and Mind\n\nInspired by Bhagavad Gita 6.16, let\'s strive for balance in our daily lives:\n\n1. **Mindful Eating:** \n   * Listen to hunger and fullness cues. \n   * Eat a balanced diet. \n   * Avoid overeating or under-eating.\n\n2. **Quality Sleep:** \n   * Maintain a consistent sleep schedule. \n   * Create a calming bedtime routine. \n   * Ensure a serene sleep environment.\n\n3. **Daily Yoga Practice:** \n   * Incorporate yoga into your routine, even for a few minutes. \n   * Combine physical postures, breathing exercises, and meditation. \n   * Consider seeking guidance from a qualified yoga teacher.' },
+            // Verse 2
+            { role: 'user', content: 'Provide a concise action plan based on Bhagavad Gita 2.47: "You have a right to perform your prescribed duty, but you are not entitled to the fruits of your actions. Never consider yourself the cause of the results of your activities, and never be attached to not doing your duty."' },
+            { role: 'assistant', content: '## Action Plan: Embracing Duty-Consciousness and Detachment\n\nInspired by Bhagavad Gita 2.47, let\'s cultivate a sense of duty and detachment:\n\n1. **Perform Your Duty Selflessly:** \n   * Identify your dharma (duty) and fulfill it without personal motives. * Act with a sense of responsibility and commitment.\n\n2. **Detach from Outcomes:** \n   * Let go of expectations and attachments to the results of your actions. * Focus on doing your best without worrying about the rewards or punishments.\n\n3. **Cultivate a Balanced Mind:** \n   * Practice equanimity in both success and failure. * Accept both positive and negative experiences with a balanced mind.' },
+            // Verse 3
+            { role: 'user', content: 'Provide a concise action plan based on Bhagavad Gita 3.20: "Therefore, one should perform his prescribed duty, which is work done with the body, mind, and speech, without being attached to the fruits thereof."' },
+            { role: 'assistant', content: '## Action Plan: Embracing Duty-Consciousness\n\nInspired by Bhagavad Gita 3.20, let\'s cultivate a sense of duty and detachment:\n\n1. **Perform Your Duty:** \n   * Identify your dharma (duty) and fulfill it with dedication. \n   * Be mindful of your actions, thoughts, and words.\n\n2. **Detach from Results:** \n   * Let go of expectations and attachments to outcomes. \n   * Focus on doing your best without worrying about the results.\n\n3. **Cultivate Equanimity:** \n   * Practice equanimity in both success and failure. \n   * Accept both positive and negative experiences with a balanced mind.' }
+        ]
+    });
+      /*
+      const result1 = await session.prompt(
+        'He who realizes the divine truth concerning My birth and life does not take birth again; and when he leaves his body, he becomes one with Me. Bhagavad Gita, Chapter 4, Verse 9'
+      );
+      console.log(result1);
+      
+      const result2 = await session.prompt(
+        'Verily, those who love the spiritual wisdom as I have taught, whose faith never wavers, and who focus their entire being on Me, they are indeed My most beloved. Bhagavad Gita, Chapter 12, Verse 20'
+      );
+      console.log(result2);
+      */
+
+      return session;
+}
+
 // Fetch and display a random verse and image when the script is loaded
 fetchRandomVerse();
 fetchRandomImage();
+
+
+
+function formatResponse(response) {
+    const html = marked(response);
+    return html;
+}
+  // Function to go to the Action with AI in new tab
+async function actWithAI(verseData) {
+    console.log(verseData);
+    const translation = verseData.translations[0].description; // English translation
+
+    const session = await setupAIModels();
+    const result1 = await session.prompt(translation);
+    console.log(result1);
+  
+    const formattedHTML = formatResponse(result1);
+
+    const newTab = window.open();
+    newTab.document.body.innerHTML = `
+        <h1 style="font-size: 28px; margin-bottom: 20px;">Action Plan</h1>
+        ${formattedHTML}
+    `;
+    newTab.document.title = "Action Plan based on Bhagavad Gita";
+    newTab.document.body.style.fontFamily = "Arial, sans-serif";
+    newTab.document.body.style.padding = "20px";
+}
+
+
 

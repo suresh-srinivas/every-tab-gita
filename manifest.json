@@ -9,15 +9,14 @@
   "chrome_url_overrides": {
     "newtab": "newtab.html"
   },
-  "permissions": [
-    "storage"
-  ],
+  "permissions": ["storage","aiLanguageModelOriginTrial"],
+  "trial_tokens": ["AhKKOkRyijSnoq+8ShOqf6lNBA62hLQAEkDmZUtK48E5W9WQuKf5rycuasSlEhfzeUywy6UHBiDSpVh4RrAPFgMAAAB4eyJvcmlnaW4iOiJjaHJvbWUtZXh0ZW5zaW9uOi8vbGJmaWdiYWJkbWFmampobmttaGNobmFtanBwbWVobmoiLCJmZWF0dXJlIjoiQUlQcm9tcHRBUElGb3JFeHRlbnNpb24iLCJleHBpcnkiOjE3NjA0ODYzOTl9"],
   "host_permissions": [
     "https://api.unsplash.com/*",
     "https://bhagavad-gita3.p.rapidapi.com/*"
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
+    "extension_pages": "script-src 'self'; object-src 'self'; "
   }
 }
 
