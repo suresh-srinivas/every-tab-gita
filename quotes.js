@@ -1,4 +1,3 @@
-
 import { marked } from './libs/marked.esm.js'
 
 // Unsplash API settings
@@ -79,6 +78,10 @@ function showOriginalVerse(verseData) {
         <h1 style="font-size: 24px; margin-top: 40px; margin-bottom: 20px;">Word Meaning</h1>
         <p style="font-size: 22px; line-height: 1.5;">${verseData.word_meanings}</p>
     `;
+chrome.storage.sync.get(['chapter', 'theme', 'profession', 'age'], (data) => {
+  console.log('Retrieved data:', data);
+});
+
 
     const newTab = window.open();
     newTab.document.body.innerHTML = originalContent;
@@ -158,6 +161,7 @@ function displayQuote(verseText, translation, chapter, verse) {
 // Fetch and display a random verse from the Bhagavad Gita
 async function fetchRandomVerse() {
     const { chapter, verse } = getRandomChapterAndVerse();
+
 
     try {
         const response = await fetch(`https://bhagavad-gita3.p.rapidapi.com/v2/chapters/${chapter}/verses/${verse}/`, {
@@ -239,7 +243,34 @@ async function setupAIModels() {
       return session;
 }
 
-// Fetch and display a random verse and image when the script is loaded
+chrome.tabs.onCreated.addListener(() => {
+  chrome.sidePanel.open().then(() => {
+    console.log('Side panel opened successfully');
+  }).catch((err) => {
+    console.error('Error opening side panel:', err);
+  });
+});
+
+
+chrome.storage.sync.get(['chapter', 'theme', 'profession', 'age'], (data) => {
+  const chapter = data.chapter || '1';
+  const theme = data.theme || 'light';
+  const profession = data.profession || 'User';
+  const age = data.age || 'Unknown';
+
+  console.log(`User selected Chapter ${chapter}, Theme: ${theme}, Profession: ${profession}, Age: ${age}`);
+
+
+  // Apply theme
+  if (theme === 'dark') {
+    document.body.style.backgroundColor = '#121212';
+    document.body.style.color = '#ffffff';
+  } else {
+    document.body.style.backgroundColor = '#ffffff';
+    document.body.style.color = '#000000';
+  }
+});
+
 fetchRandomVerse();
 fetchRandomImage();
 

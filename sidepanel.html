@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customize Your Experience</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .setting {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input, select, button {
+      padding: 8px;
+      font-size: 14px;
+      width: 100%;
+    }
+    button {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Customize Your Experience</h1>
+
+  <!-- Chapter Selection -->
+  <div class="setting">
+<label for="chapter">Select Chapter</label>
+<select id="chapter">
+  <option value="1">Chapter 1: Arjuna's Dilemma</option>
+  <option value="2">Chapter 2: Sankhya Yoga</option>
+  <option value="3">Chapter 3: Karma Yoga</option>
+  <option value="4">Chapter 4: Jnana Yoga</option>
+  <option value="5">Chapter 5: Karma Vairagya Yoga</option>
+  <option value="6">Chapter 6: Dhyana Yoga</option>
+  <option value="7">Chapter 7: Jnana Vijnana Yoga</option>
+  <option value="8">Chapter 8: Aksara Parabrahma Yoga</option>
+  <option value="9">Chapter 9: Raja Vidya Raja Guhya Yoga</option>
+  <option value="10">Chapter 10: Vibhuti Yoga</option>
+  <option value="11">Chapter 11: Vishwaroopa Darshana Yoga</option>
+  <option value="12">Chapter 12: Bhakti Yoga</option>
+  <option value="13">Chapter 13: Ksetra Ksetrajna Vibhaga Yoga</option>
+  <option value="14">Chapter 14: Gunatraya Vibhaga Yoga</option>
+  <option value="15">Chapter 15: Purusottama Yoga</option>
+  <option value="16">Chapter 16: Daivasura Sampad Vibhaga Yoga</option>
+  <option value="17">Chapter 17: Sraddhatraya Vibhaga Yoga</option>
+  <option value="18">Chapter 18: Moksha Sannyasa Yoga</option>
+</select>
+
+  </div>
+
+  <!-- Theme Selection -->
+  <div class="setting">
+    <label for="theme">Select Theme</label>
+    <select id="theme">
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+  </div>
+
+  <!-- Profession -->
+  <div class="setting">
+    <label for="profession">Profession</label>
+    <input type="text" id="profession" placeholder="Enter your profession">
+  </div>
+
+  <!-- Age -->
+  <div class="setting">
+    <label for="age">Age</label>
+    <input type="number" id="age" placeholder="Enter your age" min="1" max="120">
+  </div>
+
+  <button id="save-settings">Save Settings</button>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>
+
+
