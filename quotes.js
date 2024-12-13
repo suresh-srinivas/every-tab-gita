@@ -78,11 +78,6 @@ function showOriginalVerse(verseData) {
         <h1 style="font-size: 24px; margin-top: 40px; margin-bottom: 20px;">Word Meaning</h1>
         <p style="font-size: 22px; line-height: 1.5;">${verseData.word_meanings}</p>
     `;
-chrome.storage.sync.get(['chapter', 'theme', 'profession', 'age'], (data) => {
-  console.log('Retrieved data:', data);
-});
-
-
     const newTab = window.open();
     newTab.document.body.innerHTML = originalContent;
     newTab.document.title = "Original Verse - Bhagavad Gita";
@@ -128,7 +123,7 @@ function showCommentary(verseData) {
 // Function to open a YouTube search link in a new tab
 function openYouTube(verseData) {
     const youtubeLink = `https://www.youtube.com/results?search_query=Bhagavad+Gita+Chapter+${verseData.chapter_number}+Verse+${verseData.verse_number}`;
-    window.open(youtubeLink, '_blank');
+   window.open(youtubeLink, '_blank');
 }
 
 
@@ -157,18 +152,54 @@ function displayQuote(verseText, translation, chapter, verse) {
     referenceElement.textContent = `Bhagavad Gita, Chapter ${chapter}, Verse ${verse}`;
 }
 
+// Function to fetch user settings
+function getUserSettings() {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get(['chapter', 'theme', 'profession', 'age', 'temperature', 'topK'], (data) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        const userSettings = {
+          chapter: data.chapter || 'Any', // Default to Any Chapter
+          theme: data.theme || 'light', // Default Light theme
+          profession: data.profession || 'Engineer',
+          age: data.age || 'Unknown',
+          temperature: parseFloat(data.temperature) || 0.7, // Default temperature
+          topK: parseInt(data.topK, 10) || 50, // Default top-k
+        };
+        resolve(userSettings);
+      }
+    });
+  });
+}
 
-// Fetch and display a random verse from the Bhagavad Gita
+// Function to fetch a random verse based on user settings
 async function fetchRandomVerse() {
-    const { chapter, verse } = getRandomChapterAndVerse();
+  try {
+    // Await user settings
+    const userSettings = await getUserSettings();
+    let { chapter, theme, profession, age, temperature, topK } = userSettings;
+    let verse
 
+        console.log(`Fetching verse for Chapter: ${chapter}, Theme: ${theme}, Profession: ${profession}, Age: ${age}`);
 
-    try {
+// Handle random chapter if chapter is set to "Any"
+    if (chapter === 'Any') {
+      const randomSelection = getRandomChapterAndVerse();
+      chapter = randomSelection.chapter;
+      verse = randomSelection.verse;
+    } else {
+      verse = getRandomInt(1, versesPerChapter[chapter]); // Random verse for specific chapter
+    }
+
+    console.log(`Fetching verse for Chapter: ${chapter}, Verse: ${verse}, Temperature: ${temperature}, Top-k: ${topK}`);
+
+        // API call to fetch the verse
         const response = await fetch(`https://bhagavad-gita3.p.rapidapi.com/v2/chapters/${chapter}/verses/${verse}/`, {
             method: 'GET',
             headers: {
                 'x-rapidapi-host': 'bhagavad-gita3.p.rapidapi.com',
-                'x-rapidapi-key': '81a58ef15amsh9a25e96ce88b0b1p1c7b24jsn39659ccd82d3' // Your provided API key
+                'x-rapidapi-key': '81a58ef15amsh9a25e96ce88b0b1p1c7b24jsn39659ccd82d3' // Replace with your valid API key
             }
         });
 
@@ -180,14 +211,16 @@ async function fetchRandomVerse() {
         const verseText = verseData.text; // Original verse in Sanskrit
         const translation = verseData.translations[0].description; // English translation
 
+        // Display the fetched verse
         displayQuote(verseText, translation, chapter, verse);
         handleFooterClicks(verseData);
 
     } catch (error) {
-        console.error('Fetching the verse failed:', error);
+        console.error('Error fetching random verse:', error);
         displayQuote("Unable to fetch verse. Please check your connection or try again later.", "", "", "");
     }
 }
+
 
 async function setupAIModels() {
     chrome.aiOriginTrial.languageModel.capabilities()
