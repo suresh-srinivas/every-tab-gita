@@ -161,7 +161,7 @@ function getUserSettings() {
       } else {
         const userSettings = {
           chapter: data.chapter || 'Any', // Default to Any Chapter
-          verseCategory: data.verseCategory || 'ALL', // Default to ALL
+          verseCategory: data.verseCategory || 'All', // Default to All
           theme: data.theme || 'light', // Default Light theme
           profession: data.profession || 'Engineer',
           age: data.age || 'Unknown',
@@ -221,9 +221,9 @@ async function fetchRandomVerse() {
     let { chapter, verseCategory, theme, profession, age, temperature, topK } = userSettings;
     let verse, sub_category;
 
-   if (verseCategory != 'ALL')
+   if (verseCategory != 'All')
      chapter, verse, sub_category = await fetchRandomVerseFromCategory(verseCategory);
-   else { // verseCategory == ALL
+   else { // verseCategory == All
      // Handle random chapter if chapter is set to "Any"
      if (chapter === 'Any') {
        const randomSelection = getRandomChapterAndVerse();
