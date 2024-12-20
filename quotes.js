@@ -155,12 +155,13 @@ function displayQuote(verseText, translation, chapter, verse) {
 // Function to fetch user settings
 function getUserSettings() {
   return new Promise((resolve, reject) => {
-    chrome.storage.sync.get(['chapter', 'theme', 'profession', 'age', 'temperature', 'topK'], (data) => {
+    chrome.storage.sync.get(['chapter', 'verseCategory', 'theme', 'profession', 'age', 'temperature', 'topK'], (data) => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);
       } else {
         const userSettings = {
           chapter: data.chapter || 'Any', // Default to Any Chapter
+          verseCategory: data.verseCategory || 'ALL', // Default to ALL
           theme: data.theme || 'light', // Default Light theme
           profession: data.profession || 'Engineer',
           age: data.age || 'Unknown',
@@ -173,24 +174,66 @@ function getUserSettings() {
   });
 }
 
+
+// Fetch a random verse from a specified category in the JSON file
+async function fetchRandomVerseFromCategory(category) {
+  try {
+    // Load the JSON file containing verses
+    const response = await fetch('path-to-your-json-file.json'); // Replace with the actual path to your JSON file
+    if (!response.ok) {
+      throw new Error('Failed to fetch verses data');
+    }
+
+    const data = await response.json();
+
+    // Ensure the category exists
+    if (!data[category] || data[category].length === 0) {
+      console.error(`No verses found for category: ${category}`);
+      return;
+    }
+
+    // Pick a random verse from the category
+    const verses = data[category];
+    const randomIndex = Math.floor(Math.random() * verses.length);
+    const randomVerse = verses[randomIndex];
+
+    const { chapter, verse, sub_category } = randomVerse;
+
+    console.log(`Random Verse Selected: Chapter ${chapter}, Verse ${verse} (${sub_category})`);
+
+    // Return only the chapter, verse, and sub_category
+    return { chapter, verse, sub_category };
+
+  } catch (error) {
+    console.error('Error fetching random verse:', error);
+    return null;
+  }
+}
+
+
+
 // Function to fetch a random verse based on user settings
 async function fetchRandomVerse() {
   try {
+
     // Await user settings
     const userSettings = await getUserSettings();
-    let { chapter, theme, profession, age, temperature, topK } = userSettings;
-    let verse
+    let { chapter, verseCategory, theme, profession, age, temperature, topK } = userSettings;
+    let verse, sub_category;
 
-        console.log(`Fetching verse for Chapter: ${chapter}, Theme: ${theme}, Profession: ${profession}, Age: ${age}`);
+   if (verseCategory != 'ALL')
+     chapter, verse, sub_category = await fetchRandomVerseFromCategory(verseCategory);
+   else { // verseCategory == ALL
+     // Handle random chapter if chapter is set to "Any"
+     if (chapter === 'Any') {
+       const randomSelection = getRandomChapterAndVerse();
+       chapter = randomSelection.chapter;
+       verse = randomSelection.verse;
+     } else {
+       verse = getRandomInt(1, versesPerChapter[chapter]); // Random verse for specific chapter
+     }
+   }
 
-// Handle random chapter if chapter is set to "Any"
-    if (chapter === 'Any') {
-      const randomSelection = getRandomChapterAndVerse();
-      chapter = randomSelection.chapter;
-      verse = randomSelection.verse;
-    } else {
-      verse = getRandomInt(1, versesPerChapter[chapter]); // Random verse for specific chapter
-    }
 
     console.log(`Fetching verse for Chapter: ${chapter}, Verse: ${verse}, Temperature: ${temperature}, Top-k: ${topK}`);
 
