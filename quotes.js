@@ -152,6 +152,12 @@ function displayQuote(verseText, translation, chapter, verse) {
     referenceElement.textContent = `Bhagavad Gita, Chapter ${chapter}, Verse ${verse}`;
 }
 
+// Function to update the display with the category and sub-category
+function displayCategory(category, subCategory) {
+    const categoryElement = document.getElementById('quote-category'); // Ensure this element exists in your HTML
+    categoryElement.textContent = `Category: ${category}, Sub-Category: ${subCategory}`;
+}
+
 // Function to fetch user settings
 function getUserSettings() {
   return new Promise((resolve, reject) => {
@@ -179,7 +185,7 @@ function getUserSettings() {
 async function fetchRandomVerseFromCategory(category) {
   try {
     // Load the JSON file containing verses
-    const response = await fetch('path-to-your-json-file.json'); // Replace with the actual path to your JSON file
+    const response = await fetch('verse-category.json'); // Replace with the actual path to your JSON file
     if (!response.ok) {
       throw new Error('Failed to fetch verses data');
     }
@@ -210,6 +216,40 @@ async function fetchRandomVerseFromCategory(category) {
   }
 }
 
+// Function to load the JSON and get a random verse
+async function getRandomVerseFromJSON() {
+    try {
+        // Load the JSON file
+        const response = await fetch('swami-bodhananda.json'); // Replace with the actual path to your JSON file
+        if (!response.ok) {
+            throw new Error('Failed to fetch JSON data');
+        }
+
+        const data = await response.json();
+
+        // Pick a random sub-category
+        const categories = data['Swami Bodhananda Daily Contemplation'];
+        const randomCategoryIndex = Math.floor(Math.random() * categories.length);
+        const selectedCategory = categories[randomCategoryIndex];
+
+        // Pick a random verse from the selected sub-category
+        const randomVerseIndex = Math.floor(Math.random() * selectedCategory.verses.length);
+        const randomVerse = selectedCategory.verses[randomVerseIndex];
+
+        const { chapter, verse } = randomVerse;
+        const sub_category = selectedCategory.sub_category;
+
+        console.log(`Random Verse Selected: Chapter ${chapter}, Verse ${verse} (${sub_category})`);
+
+        // Return the chapter, verse, and subcategory
+        return { chapter, verse, sub_category };
+
+    } catch (error) {
+        console.error('Error fetching random verse:', error);
+        return null;
+    }
+}
+
 
 
 // Function to fetch a random verse based on user settings
@@ -221,8 +261,25 @@ async function fetchRandomVerse() {
     let { chapter, verseCategory, theme, profession, age, temperature, topK } = userSettings;
     let verse, sub_category;
 
-   if (verseCategory != 'All')
-     chapter, verse, sub_category = await fetchRandomVerseFromCategory(verseCategory);
+   if (verseCategory != 'All') {
+     if (verseCategory == 'Swami Bodhananda Daily Contemplation') {
+      const result = await getRandomVerseFromJSON();
+      if (result) {
+        ({ chapter, verse, sub_category } = result);
+      } else {
+        console.error('Failed to fetch verse for Swami Bodhananda Daily Contemplation');
+      }
+     }
+     else {
+       const result = await fetchRandomVerseFromCategory(verseCategory);
+       if (result) {
+       ({ chapter, verse, sub_category } = result);
+       } else {
+          console.error('Failed to fetch verse for ' + verseCategory + 'Category');
+       }
+     }
+     
+   }
    else { // verseCategory == All
      // Handle random chapter if chapter is set to "Any"
      if (chapter === 'Any') {
@@ -253,6 +310,9 @@ async function fetchRandomVerse() {
         const verseData = await response.json();
         const verseText = verseData.text; // Original verse in Sanskrit
         const translation = verseData.translations[0].description; // English translation
+
+        if (verseCategory != 'All')
+          displayCategory(verseCategory, sub_category);
 
         // Display the fetched verse
         displayQuote(verseText, translation, chapter, verse);
