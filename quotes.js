@@ -132,15 +132,54 @@ function teachTheVerse() {
     
 }
 
+
+const finalChunkBoundaries = {
+  2: { start: 61, end: 72 },
+  3: { start: 31, end: 43 },
+  4: { start: 41, end: 42 },
+  10: { start: 31, end: 42 },
+  16: { start: 21, end: 24 },
+};
+
+function playAudio(verseData) {
+  const chapter = verseData.chapter_number;
+  const verse = verseData.verse_number;
+  const totalVerses = versesPerChapter[chapter];
+
+  let sectionStart, sectionEnd;
+
+  // If a special rule applies AND the verse is in that final chunk
+  if (
+      finalChunkBoundaries[chapter] &&
+      verse >= finalChunkBoundaries[chapter].start
+  ) {
+      sectionStart = finalChunkBoundaries[chapter].start;
+      sectionEnd = finalChunkBoundaries[chapter].end;
+  } else {
+      // Normal chunking
+      sectionStart = Math.floor((verse - 1) / 10) * 10 + 1;
+      sectionEnd = sectionStart + 9;
+      if (sectionEnd > totalVerses) {
+          sectionEnd = totalVerses;
+      }
+  }
+
+  const section = `${sectionStart}-${sectionEnd}`;
+  const audioUrl = `https://chinmayagita.net/gitachanting/chapter${chapter}/${section}/`;
+
+  window.open(audioUrl, '_blank');
+}
+
 // Function to handle footer icon clicks
 function handleFooterClicks(verseData) {
     document.getElementById('original-verse').addEventListener('click', () => showOriginalVerse(verseData));
     document.getElementById('translation').addEventListener('click', () => showTranslations(verseData));
     document.getElementById('commentary').addEventListener('click', () => showCommentary(verseData));
-    document.getElementById('youtube').addEventListener('click', () => openYouTube(verseData));
+//    document.getElementById('youtube').addEventListener('click', () => openYouTube(verseData));
+    document.getElementById('audio').addEventListener('click', () => playAudio(verseData));
     document.getElementById('act-with-ai').addEventListener('click', () => actWithAI (verseData));
-  //  document.getElementById('teach-verse').addEventListener('click', teachTheVerse);
-
+    // Add this code to handle the Audio icon click in the handleFooterClicks function
+ 
 }
 
 // Function to display the verse and its translation in the HTML

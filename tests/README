@@ -1,0 +1,106 @@
+# Test Suite for Project
+
+This directory contains the test suite for the project. The tests are written using [Jest](https://jestjs.io/), a delightful JavaScript Testing Framework.
+
+## Prerequisites
+
+Before running the tests, ensure you have the following installed:
+
+- [Node.js](https://nodejs.org/) (version 14 or higher)
+- [npm](https://www.npmjs.com/) (comes with Node.js)
+
+## Setup
+
+1. **Clone the Repository**
+
+   If you haven't already, clone the repository to your local machine:
+
+   ```sh
+   git clone https://github.com/yourusername/your-repo.git
+   cd your-repo
+   ```
+
+2. **Install Dependencies**
+
+   Navigate to the project directory and install the required dependencies:
+
+   ```sh
+   npm install
+   ```
+
+## Jest Configuration
+
+The Jest configuration file (`jest.config.js`) has been moved to the `test` directory. Ensure your project structure looks similar to this:
+
+```
+your-repo/
+├── node_modules/
+├── src/
+├── test/
+│   ├── jest.config.js
+│   ├── playAudio.test.js
+│   └── ... (other test files)
+├── package.json
+└── README.md
+```
+
+## Running the Tests
+
+To run the tests, use the following command:
+
+```sh
+npm test
+```
+
+This command will execute the test suite using Jest and output the results to the console.
+
+## Running Specific Tests
+
+If you want to run specific tests, you can use the `--testPathPattern` flag followed by the path or pattern of the test file:
+
+```sh
+npx jest --testPathPattern=playAudio.test.js
+```
+
+## Additional Jest Options
+
+Jest provides various options to customize the test run. Some useful options include:
+
+- `--watch` : Run tests in watch mode.
+- `--coverage` : Generate a coverage report.
+- `--verbose` : Display individual test results with the test suite hierarchy.
+
+Example:
+
+```sh
+npx jest --watch
+```
+
+For a complete list of options, refer to the [Jest CLI documentation](https://jestjs.io/docs/en/cli).
+
+## Writing Tests
+
+To add new tests, create a new file in the `test` directory with the `.test.js` extension. Write your test cases using Jest's testing functions such as `describe`, `test`, `expect`, etc.
+
+Example:
+
+```javascript
+// example.test.js
+describe('Example Test Suite', () => {
+    test('Example Test Case', () => {
+        expect(true).toBe(true);
+    });
+});
+```
+
+## Contribution
+
+If you would like to contribute to the test suite, please fork the repository, create a new branch, and submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+
