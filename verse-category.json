@@ -34,7 +34,28 @@
     { "chapter": 18, "verse": 43, "sub_category": "Recognizing Diversity in Strengths and Contributions" },
     { "chapter": 6, "verse": 19, "sub_category": "Mindfulness and Focus" },
     { "chapter": 6, "verse": 17, "sub_category": "Mindfulness and Focus" }
+  ],
+  "Communication": [
+    { "chapter": 17, "verse": 15, "sub_category": "Speech as Self-Discipline" },
+    { "chapter": 1, "verse": 1, "sub_category": "Respectful Dialogue" },
+    { "chapter": 1, "verse": 25, "sub_category": "Non-Verbal Communication" },
+    { "chapter": 2, "verse": 10, "sub_category": "Non-Verbal Communication" },
+    { "chapter": 2, "verse": 20, "sub_category": "Higher Purpose in Communication" },
+    { "chapter": 2, "verse": 36, "sub_category": "Handling Ridicule" },
+    { "chapter": 2, "verse": 47, "sub_category": "Aligning Thought, Word, and Deed" },
+    { "chapter": 17, "verse": 16, "sub_category": "Mental Austerity in Communication" },
+    { "chapter": 16, "verse": 2, "sub_category": "Communication as Ahimsa" },
+    { "chapter": 12, "verse": 13, "sub_category": "Communication with Loving-Kindness" },
+    { "chapter": 3, "verse": 9, "sub_category": "Selfless Duty in Communication" },
+    { "chapter": 3, "verse": 21, "sub_category": "Role-Modeling Communication" },
+    { "chapter": 6, "verse": 9, "sub_category": "Adapting to Relationships" },
+    { "chapter": 9, "verse": 29, "sub_category": "Impartial Communication" },
+    { "chapter": 2, "verse": 7, "sub_category": "Communicating with Mentors" },
+    { "chapter": 4, "verse": 34, "sub_category": "Respectful Inquiry" },
+    { "chapter": 18, "verse": 63, "sub_category": "Integration and Reflection in Communication" },
+    { "chapter": 18, "verse": 72, "sub_category": "Deliberation and Growth" }
   ]
+
 }
 
 
