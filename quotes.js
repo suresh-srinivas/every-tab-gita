@@ -365,7 +365,7 @@ async function fetchRandomVerse() {
 
 
 async function setupAIModels() {
-    chrome.aiOriginTrial.languageModel.capabilities()
+    ai.languageModel.capabilities()
     .then(capabilities => {
         if (capabilities.available === 'readily') {
             // Model is ready to use
@@ -375,7 +375,7 @@ async function setupAIModels() {
             // Model needs to be downloaded first
             console.log('Model needs to be downloaded.');
             // Create a language model session to trigger the download
-            chrome.aiOriginTrial.languageModel.create()
+            ai.languageModel.create()
                 .then(session => {
                     // Handle the session or display a progress indicator
                     console.log('Model download initiated.');
@@ -389,7 +389,7 @@ async function setupAIModels() {
         }
     });
 
-    const session = await chrome.aiOriginTrial.languageModel.create({
+    const session = await ai.languageModel.create({
         initialPrompts: [
             { role: 'system', content: 'You are a friendly, helpful assistant specialized in Bhagavad Gita and creates an Action Plan of 3 actions based on the verse.' },
             // Verse 1
