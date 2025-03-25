@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,6 +34,20 @@
     button {
       margin-top: 10px;
     }
+    .category-image-preview {
+      margin: 15px 0;
+      text-align: center;
+    }
+    .category-image-preview img {
+      max-width: 200px;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: none;
+    }
+    .category-image-preview img.active {
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -49,12 +62,17 @@
          <option value="All">ALL (default)</option>
          <option value="Swami Bodhananda Daily Contemplation">Swami Bodhananda Daily Contemplation</option>
          <option value="Swami Bodhananda Top 25">Swami Bodhananda Top 25 Gita Verses</option>
-         <option value="Leadership">Leadership</option>
-         <option value="Communication">Communication</option>
-         <option value="Self-Development">Self-Development</option>
-         <option value="Mental Health">Mental Health</option>
-         <option value="Youth Education">Youth Education</option>
+         <option value="Leadership Wisdom - 34 Verses">Leadership Wisdom - 34 Verses</option>
+         <option value="OGP 2.0 - Leadership 2025">OGP 2.0 - Leadership 2025</option>
+         <option value="OGP 2.0 - Communication & Relationships 2025">OGP 2.0 - Communication & Relationships 2025</option>
+         <option value="OGP 2.0 - Youth and Education 2025">OGP 2.0 - Youth and Education 2025</option>
+         <option value="OGP 2.0 - Self Development">OGP 2.0 - Self Development</option>
        </select>
+       
+       <!-- Category Image Preview Section -->
+       <div class="category-image-preview">
+         <img id="ogp-logo" src="images/OGP-Logo.png" alt="OGP 2.0 Logo">
+       </div>
      </div>
 
     <div class="setting">

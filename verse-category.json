@@ -35,7 +35,7 @@
     { "chapter": 6, "verse": 19, "sub_category": "Mindfulness and Focus" },
     { "chapter": 6, "verse": 17, "sub_category": "Mindfulness and Focus" }
   ],
-  "Communication": [
+  "OGP 2.0 - Communication & Relationships 2025": [
     { "chapter": 17, "verse": 15, "sub_category": "Speech as Self-Discipline" },
     { "chapter": 1, "verse": 1, "sub_category": "Respectful Dialogue" },
     { "chapter": 1, "verse": 25, "sub_category": "Non-Verbal Communication" },
@@ -54,8 +54,47 @@
     { "chapter": 4, "verse": 34, "sub_category": "Respectful Inquiry" },
     { "chapter": 18, "verse": 63, "sub_category": "Integration and Reflection in Communication" },
     { "chapter": 18, "verse": 72, "sub_category": "Deliberation and Growth" }
+  ],
+  "OGP 2.0 - Leadership 2025": [
+    { "chapter": 1, "verse": 1, "sub_category": "Kurushektra of Life" },
+    { "chapter": 2, "verse": 47, "sub_category": "Dharma (Nishkaam Karma)" },
+    { "chapter": 3, "verse": 19, "sub_category": "Dharma (Nishkaam Karma)" },
+    { "chapter": 3, "verse": 35, "sub_category": "Swadharma" },
+    { "chapter": 18, "verse": 47, "sub_category": "Swadharma" },
+    { "chapter": 2, "verse": 31, "sub_category": "Swadharma" },
+    { "chapter": 4, "verse": 7, "sub_category": "Lead by Example" },
+    { "chapter": 3, "verse": 20, "sub_category": "Lead by Example" },
+    { "chapter": 3, "verse": 21, "sub_category": "Lead by Example" },
+    { "chapter": 2, "verse": 38, "sub_category": "Samatvam - Resilience and Equanimity" },
+    { "chapter": 2, "verse": 48, "sub_category": "Samatvam - Resilience and Equanimity" },
+    { "chapter": 3, "verse": 9, "sub_category": "Lead for Higher Purpose & Servant Leadership" },
+    { "chapter": 9, "verse": 27, "sub_category": "Lead for Higher Purpose & Servant Leadership" },
+    { "chapter": 3, "verse": 11, "sub_category": "Team Unity and Collaboration" },
+    { "chapter": 18, "verse": 46, "sub_category": "Team Unity and Collaboration" },
+    { "chapter": 18, "verse": 45, "sub_category": "Delegation and Empowerment" },
+    { "chapter": 3, "verse": 30, "sub_category": "Delegation and Empowerment" }
+  ],
+  "OGP 2.0 - Youth and Education 2025": [
+    { "chapter": 5, "verse": 25, "sub_category": "Awareness" },
+    { "chapter": 6, "verse": 29, "sub_category": "Awareness" },
+    { "chapter": 2, "verse": 47, "sub_category": "Optimism" },
+    { "chapter": 6, "verse": 35, "sub_category": "Optimism" },
+    { "chapter": 4, "verse": 34, "sub_category": "Critical Thinking" },
+    { "chapter": 18, "verse": 63, "sub_category": "Critical Thinking" },
+    { "chapter": 2, "verse": 38, "sub_category": "Resilience" },
+    { "chapter": 6, "verse": 5, "sub_category": "Resilience" },
+    { "chapter": 2, "verse": 40, "sub_category": "Purpose" },
+    { "chapter": 18, "verse": 46, "sub_category": "Purpose" },
+    { "chapter": 3, "verse": 13, "sub_category": "Character Building" },
+    { "chapter": 16, "verse": 1, "sub_category": "Character Building" },
+    { "chapter": 2, "verse": 50, "sub_category": "Wisdom" },
+    { "chapter": 14, "verse": 10, "sub_category": "Wisdom" },
+    { "chapter": 2, "verse": 13, "sub_category": "Self-Realization" },
+    { "chapter": 2, "verse": 16, "sub_category": "Self-Realization" },
+    { "chapter": 12, "verse": 13, "sub_category": "Ethical Leadership" },
+    { "chapter": 12, "verse": 14, "sub_category": "Ethical Leadership" },
+    { "chapter": 18, "verse": 47, "sub_category": "Ethical Leadership" }
   ]
-
 }
 
 

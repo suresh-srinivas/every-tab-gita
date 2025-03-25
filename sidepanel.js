@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const topKInput = document.getElementById('top-k');
   const saveButton = document.getElementById('save-settings');
   const verseCategory = document.getElementById('verse-category');
+  const ogpLogo = document.getElementById('ogp-logo');
 
   // Load saved settings
   chrome.storage.sync.get(['chapter', 'verseCategory', 'theme', 'profession', 'age', 'temperature', 'topK'], (data) => {
@@ -36,4 +37,26 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Settings saved successfully!');
     });
   });
+
+  // Function to check if a category is an OGP category
+  function isOGPCategory(category) {
+    return category.startsWith('OGP 2.0');
+  }
+
+  // Handle category change
+  verseCategory.addEventListener('change', function() {
+    const selectedCategory = this.value;
+    
+    // Show/hide OGP logo based on selection
+    if (isOGPCategory(selectedCategory)) {
+      ogpLogo.classList.add('active');
+    } else {
+      ogpLogo.classList.remove('active');
+    }
+  });
+
+  // Initial check for OGP category
+  if (isOGPCategory(verseCategory.value)) {
+    ogpLogo.classList.add('active');
+  }
 });

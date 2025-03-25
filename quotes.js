@@ -191,10 +191,10 @@ function displayQuote(verseText, translation, chapter, verse) {
     referenceElement.textContent = `Bhagavad Gita, Chapter ${chapter}, Verse ${verse}`;
 }
 
-// Function to update the display with the category and sub-category
-function displayCategory(category, subCategory) {
-    const categoryElement = document.getElementById('quote-category'); // Ensure this element exists in your HTML
-    categoryElement.textContent = `Category: ${category}, Sub-Category: ${subCategory}`;
+// Function to update the display with the category, sub-category, and session number
+function displayCategory(category, subCategory, sessionNumber, totalSessions) {
+    const categoryElement = document.getElementById('quote-category');
+    categoryElement.textContent = `Category: ${category}, Sub-Category: ${subCategory}, Session: ${sessionNumber} of ${totalSessions}`;
 }
 
 // Function to fetch user settings
@@ -224,7 +224,7 @@ function getUserSettings() {
 async function fetchRandomVerseFromCategory(category) {
   try {
     // Load the JSON file containing verses
-    const response = await fetch('verse-category.json'); // Replace with the actual path to your JSON file
+    const response = await fetch('verse-category.json');
     if (!response.ok) {
       throw new Error('Failed to fetch verses data');
     }
@@ -237,17 +237,31 @@ async function fetchRandomVerseFromCategory(category) {
       return;
     }
 
-    // Pick a random verse from the category
+    // Get all verses for the category
     const verses = data[category];
+
+    // Get unique sub-categories to determine total sessions
+    const uniqueSubCategories = [...new Set(verses.map(v => v.sub_category))];
+    
+    // Pick a random verse from the category
     const randomIndex = Math.floor(Math.random() * verses.length);
     const randomVerse = verses[randomIndex];
 
     const { chapter, verse, sub_category } = randomVerse;
 
-    console.log(`Random Verse Selected: Chapter ${chapter}, Verse ${verse} (${sub_category})`);
+    // Find the session number based on sub-category position
+    const sessionNumber = uniqueSubCategories.indexOf(sub_category) + 1;
 
-    // Return only the chapter, verse, and sub_category
-    return { chapter, verse, sub_category };
+    console.log(`Random Verse Selected: Chapter ${chapter}, Verse ${verse} (${sub_category}), Session ${sessionNumber} of ${uniqueSubCategories.length}`);
+
+    // Return the chapter, verse, sub_category, and correct session number
+    return { 
+      chapter, 
+      verse, 
+      sub_category, 
+      sessionNumber,
+      totalSessions: uniqueSubCategories.length 
+    };
 
   } catch (error) {
     console.error('Error fetching random verse:', error);
@@ -294,11 +308,10 @@ async function getRandomVerseFromJSON() {
 // Function to fetch a random verse based on user settings
 async function fetchRandomVerse() {
   try {
-
     // Await user settings
     const userSettings = await getUserSettings();
     let { chapter, verseCategory, theme, profession, age, temperature, topK } = userSettings;
-    let verse, sub_category;
+    let verse, sub_category, sessionNumber, totalSessions;
 
    if (verseCategory != 'All') {
      if (verseCategory == 'Swami Bodhananda Daily Contemplation') {
@@ -312,12 +325,11 @@ async function fetchRandomVerse() {
      else {
        const result = await fetchRandomVerseFromCategory(verseCategory);
        if (result) {
-       ({ chapter, verse, sub_category } = result);
+         ({ chapter, verse, sub_category, sessionNumber, totalSessions } = result);
        } else {
           console.error('Failed to fetch verse for ' + verseCategory + 'Category');
        }
      }
-     
    }
    else { // verseCategory == All
      // Handle random chapter if chapter is set to "Any"
@@ -330,37 +342,36 @@ async function fetchRandomVerse() {
      }
    }
 
-
     console.log(`Fetching verse for Chapter: ${chapter}, Verse: ${verse}, Temperature: ${temperature}, Top-k: ${topK}`);
 
-        // API call to fetch the verse
-        const response = await fetch(`https://bhagavad-gita3.p.rapidapi.com/v2/chapters/${chapter}/verses/${verse}/`, {
-            method: 'GET',
-            headers: {
-                'x-rapidapi-host': 'bhagavad-gita3.p.rapidapi.com',
-                'x-rapidapi-key': '81a58ef15amsh9a25e96ce88b0b1p1c7b24jsn39659ccd82d3' // Replace with your valid API key
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+    // API call to fetch the verse
+    const response = await fetch(`https://bhagavad-gita3.p.rapidapi.com/v2/chapters/${chapter}/verses/${verse}/`, {
+        method: 'GET',
+        headers: {
+            'x-rapidapi-host': 'bhagavad-gita3.p.rapidapi.com',
+            'x-rapidapi-key': '81a58ef15amsh9a25e96ce88b0b1p1c7b24jsn39659ccd82d3'
         }
+    });
 
-        const verseData = await response.json();
-        const verseText = verseData.text; // Original verse in Sanskrit
-        const translation = verseData.translations[0].description; // English translation
-
-        if (verseCategory != 'All')
-          displayCategory(verseCategory, sub_category);
-
-        // Display the fetched verse
-        displayQuote(verseText, translation, chapter, verse);
-        handleFooterClicks(verseData);
-
-    } catch (error) {
-        console.error('Error fetching random verse:', error);
-        displayQuote("Unable to fetch verse. Please check your connection or try again later.", "", "", "");
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
     }
+
+    const verseData = await response.json();
+    const verseText = verseData.text;
+    const translation = verseData.translations[0].description;
+
+    if (verseCategory != 'All')
+      displayCategory(verseCategory, sub_category, sessionNumber, totalSessions);
+
+    // Display the fetched verse
+    displayQuote(verseText, translation, chapter, verse);
+    handleFooterClicks(verseData);
+
+  } catch (error) {
+    console.error('Error fetching random verse:', error);
+    displayQuote("Unable to fetch verse. Please check your connection or try again later.", "", "", "");
+  }
 }
 
 
