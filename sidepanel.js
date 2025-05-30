@@ -9,9 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const saveButton = document.getElementById('save-settings');
   const verseCategory = document.getElementById('verse-category');
   const ogpLogo = document.getElementById('ogp-logo');
+  const verseOrderSelect = document.getElementById('verse-order');
 
   // Load saved settings
-  chrome.storage.sync.get(['chapter', 'verseCategory', 'theme', 'profession', 'age', 'temperature', 'topK'], (data) => {
+  chrome.storage.sync.get(['chapter', 'verseCategory', 'theme', 'profession', 'age', 'temperature', 'topK', 'verseOrder'], (data) => {
     chapterSelect.value = data.chapter || 'Any'; // Default Any Chapter
     verseCategory.value = data.verseCategory || 'ALL'; // Default ALL
     themeSelect.value = data.theme || 'light'; // Default Light theme
@@ -19,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ageInput.value = data.age || '';
     temperatureInput.value = data.temperature || '';
     topKInput.value = data.topK || '';
+    verseOrderSelect.value = data.verseOrder || 'random';
   });
 
   // Save settings
@@ -31,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
       age: ageInput.value,
       temperature: parseFloat(temperatureInput.value) || 0.0,
       topK: parseInt(topKInput.value, 10) || 0,
+      verseOrder: verseOrderSelect.value,
     };    
           
     chrome.storage.sync.set(settings, () => {

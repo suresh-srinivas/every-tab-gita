@@ -39,6 +39,34 @@ function getRandomChapterAndVerse() {
     return { chapter, verse };
 }
 
+// --- new: sequential helper ---
+async function getSequentialChapterAndVerse() {
+  const { lastChapter = 1, lastVerse = 0 } = await chrome.storage.local.get([
+    'lastChapter',
+    'lastVerse',
+  ]);
+
+  let chapter = lastChapter;
+  let verse   = lastVerse + 1;
+
+  // roll over at end of chapter
+  if (verse > versesPerChapter[chapter]) {
+    verse   = 1;
+    chapter = chapter === 18 ? 1 : chapter + 1;
+  }
+
+  await chrome.storage.local.set({ lastChapter: chapter, lastVerse: verse });
+  return { chapter, verse };
+}
+
+// --- new: unified selector ---
+async function getChapterAndVerse() {
+  const { verseOrder = 'random' } = await chrome.storage.sync.get(['verseOrder']);
+  return verseOrder === 'sequential'
+    ? await getSequentialChapterAndVerse()
+    : getRandomChapterAndVerse();
+}
+
 // Function to fetch a random nature image from Unsplash
 async function fetchRandomImage() {
     try {
@@ -304,7 +332,6 @@ async function getRandomVerseFromJSON() {
 }
 
 
-
 // Function to fetch a random verse based on user settings
 async function fetchRandomVerse() {
   try {
@@ -332,17 +359,24 @@ async function fetchRandomVerse() {
      }
    }
    else { // verseCategory == All
-     // Handle random chapter if chapter is set to "Any"
-     if (chapter === 'Any') {
-       const randomSelection = getRandomChapterAndVerse();
-       chapter = randomSelection.chapter;
-       verse = randomSelection.verse;
-     } else {
-       verse = getRandomInt(1, versesPerChapter[chapter]); // Random verse for specific chapter
-     }
-   }
+    // Decide between sequential and the original random logic
+    const { verseOrder = 'random' } = await chrome.storage.sync.get(['verseOrder']);
 
-    console.log(`Fetching verse for Chapter: ${chapter}, Verse: ${verse}, Temperature: ${temperature}, Top-k: ${topK}`);
+    if (verseOrder === 'sequential') {
+      const sel = await getSequentialChapterAndVerse();
+      chapter = sel.chapter;
+      verse   = sel.verse;
+    } else if (chapter === 'Any') {
+      const rnd = getRandomChapterAndVerse();
+      chapter = rnd.chapter;
+      verse   = rnd.verse;
+    } else {
+      // Specific chapter chosen → pick a random verse within that chapter
+      verse = getRandomInt(1, versesPerChapter[chapter]);
+    }
+  }
+    const verseOrder = await chrome.storage.sync.get(['verseOrder']);
+    console.log(`Fetching verse for Chapter: ${chapter}, Verse: ${verse}, verseOrder: ${verseOrder}, Temperature: ${temperature}, Top-k: ${topK}`);
 
     // API call to fetch the verse
     const response = await fetch(`https://bhagavad-gita3.p.rapidapi.com/v2/chapters/${chapter}/verses/${verse}/`, {
@@ -456,6 +490,7 @@ chrome.storage.sync.get(['chapter', 'theme', 'profession', 'age'], (data) => {
     document.body.style.color = '#000000';
   }
 });
+
 
 fetchRandomVerse();
 fetchRandomImage();
