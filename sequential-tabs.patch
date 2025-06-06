@@ -1,0 +1,147 @@
+commit 306613e5f9c58b318b37c3fcb5617aa84ee8d97d
+Author: Solvers Collaborative <solverscollaborative@gmail.com>
+Date:   Thu May 29 19:39:43 2025 -0700
+
+    feat: sequential verse/tabs option
+
+diff --git a/quotes.js b/quotes.js
+index b159b5f..561facd 100644
+--- a/quotes.js
++++ b/quotes.js
+@@ -39,6 +39,34 @@ function getRandomChapterAndVerse() {
+     return { chapter, verse };
+ }
+ 
++// --- new: sequential helper ---
++async function getSequentialChapterAndVerse() {
++  const { lastChapter = 1, lastVerse = 0 } = await chrome.storage.local.get([
++    'lastChapter',
++    'lastVerse',
++  ]);
++
++  let chapter = lastChapter;
++  let verse   = lastVerse + 1;
++
++  // roll over at end of chapter
++  if (verse > versesPerChapter[chapter]) {
++    verse   = 1;
++    chapter = chapter === 18 ? 1 : chapter + 1;
++  }
++
++  await chrome.storage.local.set({ lastChapter: chapter, lastVerse: verse });
++  return { chapter, verse };
++}
++
++// --- new: unified selector ---
++async function getChapterAndVerse() {
++  const { verseOrder = 'random' } = await chrome.storage.sync.get(['verseOrder']);
++  return verseOrder === 'sequential'
++    ? await getSequentialChapterAndVerse()
++    : getRandomChapterAndVerse();
++}
++
+ // Function to fetch a random nature image from Unsplash
+ async function fetchRandomImage() {
+     try {
+@@ -304,7 +332,6 @@ async function getRandomVerseFromJSON() {
+ }
+ 
+ 
+-
+ // Function to fetch a random verse based on user settings
+ async function fetchRandomVerse() {
+   try {
+@@ -332,17 +359,24 @@ async function fetchRandomVerse() {
+      }
+    }
+    else { // verseCategory == All
+-     // Handle random chapter if chapter is set to "Any"
+-     if (chapter === 'Any') {
+-       const randomSelection = getRandomChapterAndVerse();
+-       chapter = randomSelection.chapter;
+-       verse = randomSelection.verse;
+-     } else {
+-       verse = getRandomInt(1, versesPerChapter[chapter]); // Random verse for specific chapter
+-     }
+-   }
+-
+-    console.log(`Fetching verse for Chapter: ${chapter}, Verse: ${verse}, Temperature: ${temperature}, Top-k: ${topK}`);
++    // Decide between sequential and the original random logic
++    const { verseOrder = 'random' } = await chrome.storage.sync.get(['verseOrder']);
++
++    if (verseOrder === 'sequential') {
++      const sel = await getSequentialChapterAndVerse();
++      chapter = sel.chapter;
++      verse   = sel.verse;
++    } else if (chapter === 'Any') {
++      const rnd = getRandomChapterAndVerse();
++      chapter = rnd.chapter;
++      verse   = rnd.verse;
++    } else {
++      // Specific chapter chosen → pick a random verse within that chapter
++      verse = getRandomInt(1, versesPerChapter[chapter]);
++    }
++  }
++    const verseOrder = await chrome.storage.sync.get(['verseOrder']);
++    console.log(`Fetching verse for Chapter: ${chapter}, Verse: ${verse}, verseOrder: ${verseOrder}, Temperature: ${temperature}, Top-k: ${topK}`);
+ 
+     // API call to fetch the verse
+     const response = await fetch(`https://bhagavad-gita3.p.rapidapi.com/v2/chapters/${chapter}/verses/${verse}/`, {
+@@ -457,6 +491,7 @@ chrome.storage.sync.get(['chapter', 'theme', 'profession', 'age'], (data) => {
+   }
+ });
+ 
++
+ fetchRandomVerse();
+ fetchRandomImage();
+ 
+diff --git a/sidepanel.html b/sidepanel.html
+index c7af27e..2734471 100644
+--- a/sidepanel.html
++++ b/sidepanel.html
+@@ -56,6 +56,13 @@
+   <!-- Gita Section -->
+   <div class="category" id="gita-category">
+     <h2>Gita Settings</h2>
++    <label class="block mt-4">
++      <span class="text-gray-700 font-semibold">Verse order</span><br/>
++      <select id="verse-order" class="border rounded p-1 mt-1">
++        <option value="random">Random (default)</option>
++        <option value="sequential">Sequential</option>
++      </select>
++    </label>
+      <div class="verse-category-container">
+        <label for="verse-category">Select Verse Category</label>
+        <select id="verse-category">
+diff --git a/sidepanel.js b/sidepanel.js
+index d87160b..29e0105 100644
+--- a/sidepanel.js
++++ b/sidepanel.js
+@@ -9,9 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
+   const saveButton = document.getElementById('save-settings');
+   const verseCategory = document.getElementById('verse-category');
+   const ogpLogo = document.getElementById('ogp-logo');
++  const verseOrderSelect = document.getElementById('verse-order');
+ 
+   // Load saved settings
+-  chrome.storage.sync.get(['chapter', 'verseCategory', 'theme', 'profession', 'age', 'temperature', 'topK'], (data) => {
++  chrome.storage.sync.get(['chapter', 'verseCategory', 'theme', 'profession', 'age', 'temperature', 'topK', 'verseOrder'], (data) => {
+     chapterSelect.value = data.chapter || 'Any'; // Default Any Chapter
+     verseCategory.value = data.verseCategory || 'ALL'; // Default ALL
+     themeSelect.value = data.theme || 'light'; // Default Light theme
+@@ -19,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
+     ageInput.value = data.age || '';
+     temperatureInput.value = data.temperature || '';
+     topKInput.value = data.topK || '';
++    verseOrderSelect.value = data.verseOrder || 'random';
+   });
+ 
+   // Save settings
+@@ -31,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
+       age: ageInput.value,
+       temperature: parseFloat(temperatureInput.value) || 0.0,
+       topK: parseInt(topKInput.value, 10) || 0,
++      verseOrder: verseOrderSelect.value,
+     };    
+           
+     chrome.storage.sync.set(settings, () => {
