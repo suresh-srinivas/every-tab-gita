@@ -429,12 +429,18 @@ async function setupAIModels() {
       return session;
 }
 
-chrome.tabs.onCreated.addListener(() => {
-  chrome.sidePanel.open().then(() => {
-    console.log('Side panel opened successfully');
-  }).catch((err) => {
-    console.error('Error opening side panel:', err);
-  });
+chrome.tabs.onCreated.addListener((tab) => {
+  // chrome.sidePanel.open requires the tabId of the tab where the side panel
+  // should appear. Pass the newly created tab's id to avoid the
+  // "No matching signature" error.
+  chrome.sidePanel
+    .open({ tabId: tab.id })
+    .then(() => {
+      console.log('Side panel opened successfully');
+    })
+    .catch((err) => {
+      console.error('Error opening side panel:', err);
+    });
 });
 
 
