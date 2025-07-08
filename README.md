@@ -30,7 +30,7 @@ The extension should now be active, and you'll see a new verse each time you ope
 
 ## Action with AI
 
-Action with AI uses the built-in AI model known as Gemini Nano that runs inside Chrome browser. 
+Action with AI uses the built-in AI model known as Gemini Nano that runs inside Chrome browser. Recent Chrome versions expose this functionality through the `LanguageModel` API.
 
 1. **Prerequisite**
    - Use latest version of Google Chrome (127+) browser. Open `chrome://version`, to verify.
@@ -40,7 +40,16 @@ Action with AI uses the built-in AI model known as Gemini Nano that runs inside 
 3. **Login to Google**: Make sure you are logged in to Chrome. For now, Incognito and Guest mode are not supported.
 4. **Download Model**: Go to `chrome://components/`, find "Optimization Guide On Device Model", ensure it’s fully downloaded. If the version is "0.0.0.0", click "Check for update".
 5. **Troubleshoot**: If the "Optimization Guide On Device Model" is not displayed, disable the settings in step 2 above, restart your browser and re-enable it.
-6. **Verify Setup**: Open a webpage, open developer tools and check `window.ai` in the console.
+6. **Verify Setup**: Open a webpage, open developer tools and check `window.LanguageModel` in the console.
+
+To confirm the model is ready, you can call `await LanguageModel.availability()`. The response will be one of:
+
+- `unavailable` – the API or requested options aren't supported.
+- `downloadable` – the model needs to be downloaded.
+- `downloading` – a download is in progress.
+- `available` – the model is ready for use.
+
+If you receive `downloadable`, create a session with `LanguageModel.create()` and listen for `downloadprogress` events to monitor the download status.
 
 ## Contributing
 

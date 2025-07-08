@@ -376,31 +376,28 @@ async function fetchRandomVerse() {
 
 
 async function setupAIModels() {
-    ai.languageModel.capabilities()
-    .then(capabilities => {
-        if (capabilities.available === 'readily') {
-            // Model is ready to use
-            console.log('Model is ready!');
-            // Proceed with creating a language model session
-        } else if (capabilities.available === 'after-download') {
-            // Model needs to be downloaded first
-            console.log('Model needs to be downloaded.');
-            // Create a language model session to trigger the download
-            ai.languageModel.create()
-                .then(session => {
-                    // Handle the session or display a progress indicator
-                    console.log('Model download initiated.');
-                    // Optionally, you can listen for download progress events
-                })
-                .catch(error => {
-                    console.error('Error creating session:', error);
-                });
-        } else {
-            console.log('Model is not available.');
-        }
-    });
+    if (!window.LanguageModel) {
+        console.error('LanguageModel API not available.');
+        return null;
+    }
 
-    const session = await ai.languageModel.create({
+    const params = await LanguageModel.params();
+    console.log('LanguageModel params:', params);
+
+    const availability = await LanguageModel.availability();
+    console.log('LanguageModel availability:', availability);
+
+    const createOptions = {};
+    if (availability === 'downloadable') {
+        createOptions.monitor = (m) => {
+            m.addEventListener('downloadprogress', (e) => {
+                console.log(`Downloaded ${Math.round(e.loaded * 100)}%`);
+            });
+        };
+    }
+
+    const session = await LanguageModel.create({
+        ...createOptions,
         initialPrompts: [
             { role: 'system', content: 'You are a friendly, helpful assistant specialized in Bhagavad Gita and creates an Action Plan of 3 actions based on the verse.' },
             // Verse 1
